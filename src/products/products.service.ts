@@ -6,6 +6,16 @@ import { Product } from './products.model';
 export class ProductsService {
   private products: Product[] = [];
 
+  private findProduct(id: string) {
+    const product = this.products.find((product) => product.id === id);
+
+    if (!product) {
+      throw new NotFoundException('not found product');
+    }
+
+    return product;
+  }
+
   insertProduct(
     title: string,
     description: string,
@@ -24,12 +34,14 @@ export class ProductsService {
   }
 
   getProductById(id: string) {
-    const result = this.products.find((product) => product.id === id);
+    return this.findProduct(id);
+  }
 
-    if (!result) {
-      throw new NotFoundException('not found product');
-    }
+  updateProduct(id: string, body: any) {
+    this.products = this.products.map((product) =>
+      product.id === id ? { ...product, ...body } : product,
+    );
 
-    return { ...result };
+    return this.findProduct(id);
   }
 }
